@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "252637409402",
+    "firebase_url": "https://find-friend-d7f5f.firebaseio.com",
+    "project_id": "find-friend-d7f5f",
+    "storage_bucket": "find-friend-d7f5f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252637409402:android:c46e0dd7c76c6d34",
+        "android_client_info": {
+          "package_name": "sdu.cs.pichsinee.findfriend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252637409402-25b09u958m5nh0d9h8ka8l9r1mg3f71d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "sdu.cs.pichsinee.findfriend",
+            "certificate_hash": "96b7f5c74c066a96a93844c44aa2a790b336f96c"
+          }
+        },
+        {
+          "client_id": "252637409402-ijhnot2akh9fb9bsh38r3vsbftlildeb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCKh_bj8rwYs4YydFZvVPJNyjqf3PjsmM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252637409402-ijhnot2akh9fb9bsh38r3vsbftlildeb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
