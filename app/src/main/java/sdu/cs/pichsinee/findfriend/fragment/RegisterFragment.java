@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -32,7 +35,7 @@ import sdu.cs.pichsinee.findfriend.utility.MyAlert;
 
 public class RegisterFragment extends Fragment {
 
-    private String nameString, emailString, passwordString,pathAvatarString;
+    private String nameString, emailString, passwordString,pathAvatarString, uidUserString;
     private Uri uri;    //ตัวแปรที่รับค่าข้อมูลจากการเลือกรูปจาก App Image ซึ่งเป็นข้อมูลทั้งก้อน ไม่ได้มีเฉพาะรูปภาพ
     private ImageView imageView;
     private boolean chooseBool = true;
@@ -167,12 +170,54 @@ public class RegisterFragment extends Fragment {
                         strings[0] = uri.toString();
                         pathAvatarString = strings[0];
                         Log.d("5MayV1", "Path Avatar ==> " + pathAvatarString);
+                        registerEmail();
+
                     }
                 });
 
 
-
     }//end findPath
+
+    private void registerEmail() {
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.createUserWithEmailAndPassword(emailString, passwordString)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        if (task.isSuccessful()) {
+
+                            Log.d("5MayV1", "Register Success");
+                            findUidUser();
+
+                        } else {
+                            MyAlert myAlert = new MyAlert(getActivity());
+                            myAlert.NormalDialog("Cannot Register",
+                                    task.getException().getMessage().toString());
+                        }
+                    }
+                });
+
+
+    }//end registerEmail
+
+    private void findUidUser() {
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        uidUserString = firebaseUser.getUid();
+        Log.d("5MayV1", "uidUser ==> " + uidUserString);
+
+
+    }//end findUidUser
+
+    private void uploadTextToFirebase() {//upload Name, Email, password & path Avatar To Firebase
+
+
+
+    }//edn uploadTextToFirebase
 
 
     @Override
