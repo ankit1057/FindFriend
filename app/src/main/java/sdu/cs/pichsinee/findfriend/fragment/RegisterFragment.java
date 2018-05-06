@@ -1,5 +1,6 @@
 package sdu.cs.pichsinee.findfriend.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -43,6 +45,7 @@ public class RegisterFragment extends Fragment {
     private Uri uri;    //ตัวแปรที่รับค่าข้อมูลจากการเลือกรูปจาก App Image ซึ่งเป็นข้อมูลทั้งก้อน ไม่ได้มีเฉพาะรูปภาพ
     private ImageView imageView;
     private boolean chooseBool = true;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -98,13 +101,19 @@ public class RegisterFragment extends Fragment {
         if (item.getItemId() == R.id.itemUploadValue) {
 
 //            To Do
+
+            //เมื่อมีการคลิกไอคอน upload ให้ทำการ check ProgressDialog
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setTitle("Please wait...");
+            progressDialog.show();
+
             CheckTextField();
             return true;
         }
         return super.onOptionsItemSelected(item);
     } //end onOptionsItemSelected
 
-    private void CheckTextField() { //Chek ค่าว่าง
+    private void CheckTextField() { //Check ค่าว่าง
 
 //        Get Value From EditText
         //ผูกตัวแปรบน JAVA กับอิลิเมนต์บน XML
@@ -119,13 +128,16 @@ public class RegisterFragment extends Fragment {
 
         MyAlert myAlert = new MyAlert(getActivity());
 
-        if (chooseBool) {
+        if (chooseBool) {   //ถ้า Boolean เป็น true คือ ยังไม่เลือกรูปภาพ
 //            Non Choose Image
             myAlert.NormalDialog("Non Choose Image", "Please Choose Image for Avatar");
+
+            progressDialog.dismiss();
 
         } else if (nameString.isEmpty()|| emailString.isEmpty()|| passwordString.isEmpty()) {
 //            No Space
             myAlert.NormalDialog(getString(R.string.title_space),getString(R.string.title_message));
+            progressDialog.dismiss();
 
         } else {
 //            No Space
@@ -214,7 +226,18 @@ public class RegisterFragment extends Fragment {
         uidUserString = firebaseUser.getUid();
         Log.d("5MayV1", "uidUser ==> " + uidUserString);
 
-        updateNewUseToFirebase();
+//        Setup DisplayName
+        UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+        builder.setDisplayName(nameString);
+
+        UserProfileChangeRequest userProfileChangeRequest = builder.build();
+
+        firebaseUser.updateProfile(userProfileChangeRequest).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                updateNewUseToFirebase();
+            }
+        });
 
     }//end findUidUser
 
@@ -230,6 +253,13 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d("5MayV1", "Success Update");
+
+                progressDialog.dismiss();   //เมื่อทำการ Upload เสร็จแล้ว ให้ ProgressDialog หายไป
+
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.contentMainFragment, new ServiceFragment())
+                        .commit();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
