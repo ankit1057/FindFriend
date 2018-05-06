@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +32,7 @@ import sdu.cs.pichsinee.findfriend.utility.UserMode;
 public class ServiceFragment extends Fragment {
 
     private String displayNameString,uidUserLoggedinString;
-    private ArrayList<String> uidFriendStringArrayList, friendStringArrayList, pathAvatarStringArrayList;
+    private ArrayList<String> uidFriendStringArrayList, friendStringArrayList, pathAvatarStringArrayList, uidForDetailStringArrayList;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -98,6 +99,7 @@ public class ServiceFragment extends Fragment {
 
                     friendStringArrayList.add(userMode.getNameString());
                     pathAvatarStringArrayList.add(userMode.getPathAvatarString());
+                    uidForDetailStringArrayList.add(uidFriendStringArrayList.get(ints[0]));
 
                     if (ints[0] == (uidFriendStringArrayList.size()-1)) {
 
@@ -110,7 +112,22 @@ public class ServiceFragment extends Fragment {
                         ListView listView = getView().findViewById(R.id.listViewFriend);
                         listView.setAdapter(friendAdapter);
 
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                Log.d("6MayV4", "Click Friend ==> " + friendStringArrayList.get(i));
+
+                                //การส่งข้อมูลข้าม Fragment
+                                getActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.contentMainFragment,
+                                                DetailFragment.detailInstance(uidForDetailStringArrayList.get(i),
+                                                        friendStringArrayList.get(i), pathAvatarStringArrayList.get(i)))
+                                        .addToBackStack(null)
+                                        .commit();
+                            }
+                        });
 
                     }//end if
                     ints[0] += 1;
