@@ -20,11 +20,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -32,6 +35,7 @@ import com.google.firebase.storage.UploadTask;
 import sdu.cs.pichsinee.findfriend.MainActivity;
 import sdu.cs.pichsinee.findfriend.R;
 import sdu.cs.pichsinee.findfriend.utility.MyAlert;
+import sdu.cs.pichsinee.findfriend.utility.UserMode;
 
 public class RegisterFragment extends Fragment {
 
@@ -210,8 +214,32 @@ public class RegisterFragment extends Fragment {
         uidUserString = firebaseUser.getUid();
         Log.d("5MayV1", "uidUser ==> " + uidUserString);
 
+        updateNewUseToFirebase();
 
     }//end findUidUser
+
+    private void updateNewUseToFirebase() { //สำหรับอัพเดตข้อมูลบน Firebase
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference()
+                .child(uidUserString);
+
+        UserMode userMode = new UserMode(nameString, pathAvatarString); //Setter value to Model กำหนดค่า child ที่ต้องการใส่ใน Model
+
+        databaseReference.setValue(userMode).addOnSuccessListener(new OnSuccessListener<Void>() {   //ส่งข้อมูล Model ไปยัง Firebase
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("5MayV1", "Success Update");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("5MayV1", "Cannot Update ==> " + e.toString());
+            }
+        });
+
+
+    }//end updateNewUseTpFirebase
 
     private void uploadTextToFirebase() {//upload Name, Email, password & path Avatar To Firebase
 
